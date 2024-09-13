@@ -9,7 +9,7 @@ print_colored() {
 display_colored_text() {
     print_colored "42;30" "========================================================="
     print_colored "46;30" "========================================================="
-    print_colored "45;97" "======================   T3EN   ========================="
+    print_colored "45;97" "======================   T3EN   =========================="
     print_colored "43;30" "============== modify all by JAWA-PRIDE  ================"
     print_colored "41;97" "=========== https://t.me/AirdropJP_JawaPride ============"
     print_colored "44;30" "========================================================="
@@ -41,14 +41,14 @@ read -p "Masukkan jumlah ETH yang akan dieksekusi (minimal 0.01 ETH): " amount
 MINIMUM_AMOUNT=0.01
 
 if (( $(echo "$amount < $MINIMUM_AMOUNT" | bc -l) )); then
-    echo "Jumlah yang dieksekusi harus minimal $MINIMUM_AMOUNT ETH. Proses dihentikan."
+    echo "Peringatan: Jumlah yang dieksekusi lebih kecil dari $MINIMUM_AMOUNT ETH. Proses tidak akan dilanjutkan."
     exit 1
+else
+    echo "Jumlah yang akan dieksekusi: $amount ETH"
 fi
 
-echo "Jumlah yang akan dieksekusi: $amount ETH"
-
 # Mengunduh skrip dengan curl menggunakan URL mentah
-curl -s https://raw.githubusercontent.com/Wawanahayy/kosongan/main/b.sh -o t3rn-executor.sh
+curl -s https://raw.githubusercontent.com/Wawanahayy/JawaPride-all.sh/main/t3rn/t3rn-executor.sh -o t3rn-executor.sh
 
 if [ $? -ne 0 ]; then
     echo "Gagal mengunduh file t3rn-executor.sh. Periksa koneksi internet Anda dan coba lagi."
