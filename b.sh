@@ -48,7 +48,7 @@ fi
 echo "Jumlah yang akan dieksekusi: $amount ETH"
 
 # Mengunduh skrip dengan curl menggunakan URL mentah
-curl -s https://raw.githubusercontent.com/Wawanahayy/JawaPride-all.sh/main/t3rn/t3rn-executor.sh -o t3rn-executor.sh
+curl -s https://raw.githubusercontent.com/Wawanahayy/kosongan/main/b.sh -o t3rn-executor.sh
 
 if [ $? -ne 0 ]; then
     echo "Gagal mengunduh file t3rn-executor.sh. Periksa koneksi internet Anda dan coba lagi."
