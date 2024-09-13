@@ -117,20 +117,20 @@ set_private_key() {
     done
 }
 
-set_enabled_networks() {
-    read -p "Apakah Anda ingin mengaktifkan beberapa jaringan? (y/n): " aktifkan_beberapa
+set_enabled_networks_and_rpc() {
+    read -p "Apakah Anda ingin mengaktifkan 5 jaringan default (arbitrum-sepolia, base-sepolia, blast-sepolia, optimism-sepolia, l1rn)? (y/n): " aktifkan_lima
 
-    if [[ "$aktifkan_beberapa" == "y" || "$aktifkan_beberapa" == "Y" ]]; then
-        NETWORKS="arbitrum-sepolia,base-sepolia,blast-sepolia,optimism-sepolia,brn-sepolia"
+    if [[ "$aktifkan_lima" == "y" || "$aktifkan_lima" == "Y" ]]; then
+        ENABLED_NETWORKS="arbitrum-sepolia,base-sepolia,blast-sepolia,optimism-sepolia,l1rn"
         RPC_URLS="https://arbitrum-sepolia.blockpi.network/v1/rpc/public https://sepolia.base.org/rpc https://sepolia.blast.io/ https://optimism-sepolia.drpc.org https://brn.rpc.caldera.xyz/http"
-        echo "Mengaktifkan jaringan: $NETWORKS"
+        echo "Mengaktifkan 5 jaringan default: $ENABLED_NETWORKS"
         echo "Menggunakan RPC URLs: $RPC_URLS"
     else
-        echo "Anda tidak memilih untuk mengaktifkan jaringan."
+        echo "Anda tidak memilih untuk mengaktifkan 5 jaringan default."
         exit 0
     fi
 
-    echo "Pengaturan selesai. Jaringan yang diaktifkan: $NETWORKS"
+    echo "Pengaturan selesai. Jaringan yang diaktifkan: $ENABLED_NETWORKS"
 }
 
 create_systemd_service() {
@@ -147,7 +147,7 @@ Environment="NODE_ENV=testnet"
 Environment="LOG_LEVEL=info"
 Environment="LOG_PRETTY=false"
 Environment="PRIVATE_KEY_LOCAL=0x$PRIVATE_KEY_LOCAL"
-Environment="ENABLED_NETWORKS=$NETWORKS"
+Environment="ENABLED_NETWORKS=$ENABLED_NETWORKS"
 Environment="RPC_URLS=$RPC_URLS"
 ExecStart=/root/executor/executor/bin/executor
 Restart=always
@@ -176,7 +176,7 @@ update_system
 download_and_extract_binary
 set_environment_variables
 set_private_key
-set_enabled_networks
+set_enabled_networks_and_rpc
 create_systemd_service
 start_service
 display_log
