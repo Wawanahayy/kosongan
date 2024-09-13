@@ -28,13 +28,24 @@ log() {
 # Pertanyaan untuk bergabung dengan channel
 read -p "Apakah Anda sudah bergabung dengan channel kami Channel: @AirdropJP_JawaPride https://t.me/AirdropJP_JawaPride? (y/n): " join_channel
 
-if [[ "$join_channel" == "y" || "$join_channel" == "Y" ]]; then
-    echo "Terima kasih telah bergabung dengan channel kami!"
-else
+if [[ "$join_channel" == "n" || "$join_channel" == "N" ]]; then
     echo "Kami sarankan Anda bergabung dengan channel untuk mendapatkan informasi terbaru."
     sleep 5
     exit 1
 fi
+
+# Mendapatkan input nilai yang akan dieksekusi
+read -p "Masukkan jumlah ETH yang akan dieksekusi (minimal 0.01 ETH): " amount
+
+# Pengecekan nilai minimal
+MINIMUM_AMOUNT=0.01
+
+if (( $(echo "$amount < $MINIMUM_AMOUNT" | bc -l) )); then
+    echo "Jumlah yang dieksekusi harus minimal $MINIMUM_AMOUNT ETH. Proses dihentikan."
+    exit 1
+fi
+
+echo "Jumlah yang akan dieksekusi: $amount ETH"
 
 # Mengunduh skrip dengan curl menggunakan URL mentah
 curl -s https://raw.githubusercontent.com/Wawanahayy/JawaPride-all.sh/main/t3rn/t3rn-executor.sh -o t3rn-executor.sh
@@ -129,20 +140,29 @@ set_enabled_networks() {
     fi
 
     echo "Pengaturan selesai. Jaringan yang diaktifkan: $ENABLED_NETWORKS"
+}
 
-    # Menambahkan URL RPC
-    read -p "Masukkan URL RPC utama untuk Arbitrum: " RPC_URL_ARBITRUM
-    read -p "Masukkan URL RPC utama untuk Base: " RPC_URL_BASE
-    read -p "Masukkan URL RPC utama untuk Blast: " RPC_URL_BLAST
-    read -p "Masukkan URL RPC utama untuk Optimism: " RPC_URL_OPTIMISM
-    read -p "Masukkan URL RPC utama untuk L1RN: " RPC_URL_L1RN
+configure_rpc_urls() {
+    echo "Konfigurasi URL RPC untuk setiap jaringan:"
 
-    # Mengatur URL RPC default jika kosong
-    [ -z "$RPC_URL_ARBITRUM" ] && RPC_URL_ARBITRUM="https://sepolia-rollup.arbitrum.io/rpc"
-    [ -z "$RPC_URL_BASE" ] && RPC_URL_BASE="https://sepolia.base.org/rpc"
-    [ -z "$RPC_URL_BLAST" ] && RPC_URL_BLAST="https://sepolia.blast.io/"
-    [ -z "$RPC_URL_OPTIMISM" ] && RPC_URL_OPTIMISM="https://optimism-sepolia.drpc.org"
-    [ -z "$RPC_URL_L1RN" ] && RPC_URL_L1RN="https://brn.rpc.caldera.xyz/http"
+    echo "Base Network (Arbitrum): https://sepolia.base.org/rpc"
+    echo "Blast Network: https://sepolia.blast.io/"
+    echo "Optimism Network: https://optimism-sepolia.drpc.org"
+    echo "Arbitrum Network: https://sepolia-rollup.arbitrum.io/rpc"
+    echo "L1RN Network: https://brn.rpc.caldera.xyz/http"
+
+    export RPC_URL_BASE="https://sepolia.base.org/rpc"
+    export RPC_URL_BLAST="https://sepolia.blast.io/"
+    export RPC_URL_OPTIMISM="https://optimism-sepolia.drpc.org"
+    export RPC_URL_ARBITRUM="https://sepolia-rollup.arbitrum.io/rpc"
+    export RPC_URL_L1RN="https://brn.rpc.caldera.xyz/http"
+
+    echo "URL RPC yang digunakan:"
+    echo "Base: $RPC_URL_BASE"
+    echo "Blast: $RPC_URL_BLAST"
+    echo "Optimism: $RPC_URL_OPTIMISM"
+    echo "Arbitrum: $RPC_URL_ARBITRUM"
+    echo "L1RN: $RPC_URL_L1RN"
 }
 
 create_systemd_service() {
@@ -160,10 +180,10 @@ Environment="LOG_LEVEL=info"
 Environment="LOG_PRETTY=false"
 Environment="PRIVATE_KEY_LOCAL=0x$PRIVATE_KEY_LOCAL"
 Environment="ENABLED_NETWORKS=$ENABLED_NETWORKS"
-Environment="RPC_URL_ARBITRUM=$RPC_URL_ARBITRUM"
 Environment="RPC_URL_BASE=$RPC_URL_BASE"
 Environment="RPC_URL_BLAST=$RPC_URL_BLAST"
 Environment="RPC_URL_OPTIMISM=$RPC_URL_OPTIMISM"
+Environment="RPC_URL_ARBITRUM=$RPC_URL_ARBITRUM"
 Environment="RPC_URL_L1RN=$RPC_URL_L1RN"
 ExecStart=/root/executor/executor/bin/executor
 Restart=always
@@ -193,6 +213,7 @@ download_and_extract_binary
 set_environment_variables
 set_private_key
 set_enabled_networks
+configure_rpc_urls
 create_systemd_service
 start_service
 display_log
