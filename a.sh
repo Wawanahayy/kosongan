@@ -131,6 +131,20 @@ set_enabled_networks() {
     echo "Pengaturan selesai. Jaringan yang diaktifkan: $ENABLED_NETWORKS"
 }
 
+set_rpc_urls() {
+    # Menetapkan RPC URLs
+    read -p "Masukkan URL RPC utama: " MAIN_RPC_URL
+    read -p "Masukkan URL RPC cadangan (opsional, tekan Enter jika tidak ada): " BACKUP_RPC_URL
+
+    if [ -z "$BACKUP_RPC_URL" ]; then
+        export RPC_URLS="$MAIN_RPC_URL"
+    else
+        export RPC_URLS="$MAIN_RPC_URL,$BACKUP_RPC_URL"
+    fi
+
+    echo "RPC URLs disetel: $RPC_URLS"
+}
+
 create_systemd_service() {
     SERVICE_FILE="/etc/systemd/system/executor.service"
     sudo bash -c "cat > $SERVICE_FILE" <<EOL
@@ -146,6 +160,7 @@ Environment="LOG_LEVEL=info"
 Environment="LOG_PRETTY=false"
 Environment="PRIVATE_KEY_LOCAL=0x$PRIVATE_KEY_LOCAL"
 Environment="ENABLED_NETWORKS=$ENABLED_NETWORKS"
+Environment="RPC_URLS=$RPC_URLS"
 ExecStart=/root/executor/executor/bin/executor
 Restart=always
 RestartSec=3
@@ -174,6 +189,7 @@ download_and_extract_binary
 set_environment_variables
 set_private_key
 set_enabled_networks
+set_rpc_urls
 create_systemd_service
 start_service
 display_log
